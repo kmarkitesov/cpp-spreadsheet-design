@@ -26,9 +26,16 @@ public:
 
 private:
     void MaybeIncreaseSizeToIncludePosition(Position pos);
-    void PrintCells(std::ostream& output,
-                    const std::function<void(const CellInterface&)>& printCell) const;
-    Size GetActualSize() const;
+    void UpdatePrintableSize();
+    bool HasCircularDependency(Position pos, const std::vector<Position>& new_deps) const;
+
+    // Обновление графа зависимостей при коммите новой формулы/текста
+    void DetachDependencies(Position pos);
+    void AttachDependencies(Position pos, const std::vector<Position>& new_deps);
+
+    // Инвалидация кэша по rdeps_ с одним проходом
+    void InvalidateCacheFrom(Position start) noexcept;
 
     std::vector<std::vector<std::unique_ptr<Cell>>> cells_;
+    Size printable_size_;
 };
